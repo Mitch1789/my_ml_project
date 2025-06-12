@@ -8,9 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 def main():
     # 1. Load data
     X, y = load_iris(return_X_y=True)
-    X_train, X_val, y_train, y_val = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # 2. Train a simple model
     clf = RandomForestClassifier(n_estimators=10, random_state=42)

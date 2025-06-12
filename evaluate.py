@@ -18,9 +18,7 @@ def main():
     clf = joblib.load(model_path)
 
     X, y = load_iris(return_X_y=True)
-    _, X_test, _, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    _, X_test, _, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     preds = clf.predict(X_test)
     acc = accuracy_score(y_test, preds)

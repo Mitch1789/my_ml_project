@@ -9,9 +9,7 @@ def test_evaluate_and_metrics():
     subprocess.run(["python", "train.py"], check=True)
 
     # Run evaluation
-    result = subprocess.run(
-        ["python", "evaluate.py"], capture_output=True, text=True
-    )
+    result = subprocess.run(["python", "evaluate.py"], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
 
     # Verify metrics file
