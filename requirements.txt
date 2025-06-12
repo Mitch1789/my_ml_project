@@ -3,3 +3,4 @@ joblib
 pytest
 pandas==1.5.3   # or whatever pandas 1.x pin you chose
 numpy==1.26.1   # or numpy<2.0
+flake8
