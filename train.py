@@ -1,8 +1,9 @@
+import os
 import joblib
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-import os
+
 
 def main():
     # 1. Load data
@@ -19,6 +20,7 @@ def main():
     os.makedirs("artifacts", exist_ok=True)
     joblib.dump(clf, "artifacts/model.pkl")
     print("Model trained and saved to artifacts/model.pkl")
+
 
 if __name__ == "__main__":
     main()
