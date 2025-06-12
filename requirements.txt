@@ -1,6 +1,20 @@
-scikit-learn>=1.0
-joblib
-pytest
-pandas
-numpy==2.3.0
-scikit-learn==1.7.0
+# scikit-learn>=1.0
+# joblib
+# pytest
+# pandas
+# numpy==2.3.0
+# scikit-learn==1.7.0
+
+
+-scikit-learn>=1.0
+-joblib
+-pytest
+-pandas
+-numpy==2.3.0
++scikit-learn>=1.0
++joblib
++pytest
++# pin pandas to the last 1.x release that still supports Python 3.9
++pandas==1.5.3
++# use the latest NumPy 1.x for Python 3.9
++numpy==1.26.1
