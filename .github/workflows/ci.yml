@@ -63,12 +63,18 @@ jobs:
           name: model-artifact
           path: artifacts/
 
+      - name: Decode SSH key
+        run: |
+         mkdir -p ~/.ssh
+         echo "${{ secrets.STAGING_SSH_KEY_B64 }}" | base64 --decode > ~/.ssh/id_rsa
+         chmod 600 ~/.ssh/id_rsa   
+
       - name: Deploy to Staging via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
+          key_path: ~/.ssh/id_rsa
           port: 22
           source: artifacts/model.pkl
           target: /path/to/staging/models/latest.pkl
