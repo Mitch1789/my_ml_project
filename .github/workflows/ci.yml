@@ -66,7 +66,9 @@ jobs:
       - name: Decode SSH key
         run: |
          mkdir -p ~/.ssh
-         echo "${{ secrets.STAGING_SSH_KEY_B64 }}" | base64 --decode > ~/.ssh/id_rsa
+         echo "${{ secrets.STAGING_SSH_KEY_B64 }}" \
+          | tr -d '\r' \
+          | base64 --decode > ~/.ssh/id_rsa
          chmod 600 ~/.ssh/id_rsa   
 
       - name: Deploy to Staging via SCP
