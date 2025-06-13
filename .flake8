@@ -5,4 +5,4 @@ exclude =
     build,
     dist,
     .git
-max-line-length = 79
+max-line-length = 300

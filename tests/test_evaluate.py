@@ -1,7 +1,6 @@
 import os
 import subprocess
 import json
-import pytest
 
 
 def test_evaluate_and_metrics():
