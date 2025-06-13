@@ -1,4 +1,5 @@
-name: ML CI Pipeline
+# .github/workflows/ci.yml
+name: ML CI + CD Pipeline
 
 on:
   push:
@@ -7,13 +8,23 @@ on:
     branches: [ "main" ]
 
 jobs:
+
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
 
@@ -22,17 +33,52 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint (Optional)
-        run: |
-          pip install flake8
-          flake8 .
+      - name: Lint (flake8)
+        run: flake8 . --exclude .venv
 
+      - name: Run Unit Tests (pytest)
+        run: pytest --maxfail=1 --disable-warnings -q
 
-      - name: Run Unit Tests
-        run: pytest tests/
-
-      - name: Small-Scale Training
+      - name: Train model
         run: python train.py
 
-      - name: Evaluate Model
+      - name: Check performance
         run: python check_performance.py
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: model-artifact
+          path: artifacts/model.pkl
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: needs.build-and-test.result == 'success'
+
+    steps:
+      - name: Download model artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: model-artifact
+          path: artifacts/
+
+      - name: Deploy to Staging via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          source: artifacts/model.pkl
+          target: /path/to/staging/models/latest.pkl
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push Docker image
+        run: |
+          docker build -t myorg/ml-app:${{ github.sha }} .
+          docker push myorg/ml-app:${{ github.sha }}
