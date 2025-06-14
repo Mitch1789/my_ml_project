@@ -1,3 +1,5 @@
+# 
+
 # .github/workflows/ci.yml
 name: ML CI + CD Pipeline
 
@@ -57,37 +59,17 @@ jobs:
     if: needs.build-and-test.result == 'success'
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Download model artifact
         uses: actions/download-artifact@v4
         with:
           name: model-artifact
           path: artifacts/
 
-      - name: Decode SSH key
+      - name: Deploy to Staging (stub)
         run: |
-         mkdir -p ~/.ssh
-         echo "${{ secrets.STAGING_SSH_KEY_B64 }}" \
-          | tr -d '\r' \
-          | base64 --decode > ~/.ssh/id_rsa
-         chmod 600 ~/.ssh/id_rsa   
-
-      - name: Deploy to Staging via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USER }}
-          key_path: ~/.ssh/id_rsa
-          port: 22
-          source: artifacts/model.pkl
-          target: /path/to/staging/models/latest.pkl
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build & Push Docker image
-        run: |
-          docker build -t myorg/ml-app:${{ github.sha }} .
-          docker push myorg/ml-app:${{ github.sha }}
+          echo "✅ All CI checks passed!"
+          echo "📦 Would now deploy artifacts/model.pkl to your staging environment."
+          echo "    (e.g. scp, docker push, kubectl set image, etc.)"
